@@ -1,0 +1,30 @@
+{
+  "name": "bal-aware",
+  "version": "1.0.0",
+  "description": "A simple app to display MY bank account balances on my phone's lock and home screen",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DaveSeidman/bal-aware.git"
+  },
+  "keywords": [
+    "bank",
+    "account",
+    "balance",
+    "ofx",
+    "node.js"
+  ],
+  "author": "Dave Seidman",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DaveSeidman/bal-aware/issues"
+  },
+  "homepage": "https://github.com/DaveSeidman/bal-aware#readme",
+  "dependencies": {
+    "banking": "^1.0.0",
+    "xml2js": "^0.4.16"
+  }
+}
