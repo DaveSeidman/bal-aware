@@ -1,15 +1,6 @@
 var Banking = require('banking');
-
+var accounts = require('./private/accounts.json');
 var parseString = require('xml2js').parseString;
-
-var checking = Banking({
-
-});
-
-var credit = Banking({
-    
-});
-
 
 var today = new Date();
 var todayFormatted =
@@ -18,30 +9,34 @@ today.getFullYear() + '' +
 ((today.getDate() < 10) ? ('0' + today.getDate()) : today.getDate() );
 
 
-checking.getStatement({start:todayFormatted, end:todayFormatted}, function(err, res) {
-    if(err) {
-        console.log(err)
-    }
-    else {
-        var str = JSON.stringify(res),
-        end = str.substring(str.lastIndexOf("BALAMT"), str.length),
-        open = end.indexOf('[') + 2,
-        close = end.indexOf(']') - 2,
-        bal = end.substring(open, close);
-        console.log("checking:", bal);
-    }
-});
+for(var i = 0; i < accounts.data.length; i++) {
+    var account = accounts.data[i];
+    var bankAccount = Banking(account);
+    bankAccount.getStatement({start:todayFormatted, end:todayFormatted}, function(err, res) {
 
-credit.getStatement({start:todayFormatted, end:todayFormatted}, function(err, res) {
-    if(err) {
-        console.log(err)
+        if(err) {
+            console.log("there was a banking error", err);
+        }
+        else {
+            parseString(res.xml, function (err, result) {
+
+                var ofx = result.OFX;
+                var bal = getObjects(ofx, 'LEDGERBAL');
+                console.log(bal[0].LEDGERBAL[0].BALAMT[0]);
+            })
+        }
+    });
+}
+
+
+function getObjects(obj, key) {
+    var objects = [];
+    for (var i in obj) {
+        if(i == key) objects.push(obj);
+        if (!obj.hasOwnProperty(i)) continue;
+        if (typeof obj[i] == 'object') {
+            objects = objects.concat(getObjects(obj[i], key));
+        }
     }
-    else {
-        var str = JSON.stringify(res),
-        end = str.substring(str.indexOf("BALAMT"), str.length),
-        open = end.indexOf('>') + 1,
-        close = end.indexOf('<'),
-        bal = end.substring(open, close);
-        console.log("credit", bal);
-    }
-});
+    return objects;
+}
